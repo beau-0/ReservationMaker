@@ -11,6 +11,12 @@ function create (reservationData) {
         .returning('reservation_id');
 }
 
+function list () {
+    return knex ('reservations')
+        .select('*');
+}
+
 module.exports = {
     create,
+    list
   };

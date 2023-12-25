@@ -4,7 +4,7 @@ const API_BASE_URL =
 async function createReservation(reservationData) {
     const response = await fetch(`${API_BASE_URL}/reservations/new`,
     {
-      method: 'PUT',
+      method: 'POST',
       body: JSON.stringify(reservationData),
       headers: {
         'Content-Type': 'application/json',
@@ -13,6 +13,7 @@ async function createReservation(reservationData) {
   
     if(!response.ok){
       const errorData = await response.json();
+      console.log("response json: ", errorData)
       throw new Error(errorData.error.message || 'Failed to create reservation');
     }
   

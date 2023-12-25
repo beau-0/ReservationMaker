@@ -10,8 +10,10 @@ function Reservations () {
     const [lastName, setLastName] = useState("");
     const [mobileNumber, setMobileNumber] = useState("");
     const [reservationDate, setReservationDate] = useState("");
+    const [reservationTime, setReservationTime] = useState("");
     const [partySize, setPartySize] = useState("");
     const history = useHistory();
+    const [errors, setErrors] = useState({});
 
     const validateForm = () => {
         const errors = {};
@@ -27,24 +29,27 @@ function Reservations () {
         event.preventDefault();
 
         const newReservation = {
-            firstName: firstName, 
-            lastName: lastName,
-            mobileNumber: mobileNumber,
-            reservationDate: reservationDate,
-            partySize: partySize,
+            first_name: firstName, 
+            last_name: lastName,
+            mobile_number: mobileNumber,
+            reservation_date: reservationDate,
+            reservation_time: reservationTime,
+            people: partySize,
         };
 
         try {
-            const errors = validateForm();
+            const validationErrors = validateForm();
             if (Object.keys(errors).length === 0) {
                 await service.createReservation(newReservation);
                 history.push("/dashboard");
               } else {
-                // Display validation errors to the user
+                // set validation errors
                 console.error("Validation errors: ", errors);
+                setErrors(validationErrors);
               }
         } catch (error) {
-            console.error("Error submitting reservation: ", error)
+            console.error("Error submitting reservation: ", error);
+            setErrors({ submit: "Failed to submit reservation. Please try again." });
         }
     }
 
@@ -52,7 +57,7 @@ function Reservations () {
         <div>
             <h4>New Reservation</h4>
             <form onSubmit={handleSubmit}>
-                <label htmlFor="firstName">Name</label>
+                <label htmlFor="first_name">Name</label>
                 <input 
                     type="text" 
                     id="firstName" 
@@ -63,13 +68,13 @@ function Reservations () {
                 />
                 <input 
                     type="text" 
-                    id="lastName" 
+                    id="last_name" 
                     value={lastName} 
                     onChange={(e) => {setLastName(e.target.value)}} 
                     placeholder="Last Name"
                     required
                 />
-                <label htmlFor="mobileNumber">Contact Number</label>
+                <label htmlFor="mobile_number">Contact Number</label>
                 <input 
                     type="tel" 
                     id="mobileNumber" 
@@ -78,12 +83,20 @@ function Reservations () {
                     placeholder="Enter your phone number"
                     required
                 />
-                <label htmlFor="reservationDate">Date of Reservation</label>
+                <label htmlFor="reservation_date">Date of Reservation</label>
                 <input 
                     type="date" 
                     id="reservationDate" 
                     value={reservationDate} 
                     onChange={(e) => {setReservationDate(e.target.value)}} 
+                    required
+                />
+                <label htmlFor="reservation_time">Time of Reservation</label>
+                <input 
+                    type="time" 
+                    id="reservationTime" 
+                    value={reservationTime} 
+                    onChange={(e) => {setReservationTime(e.target.value)}} 
                     required
                 />
                 <label htmlFor="partySize">Number of People</label>
@@ -95,6 +108,9 @@ function Reservations () {
                     placeholder="Number of people"
                     required
                 />
+                
+                {/* Display ErrorAlert if there's a submission error */}
+                {errors.submit && <ErrorAlert error={{ message: errors.submit }} />}
                 <Link to="/dashboard">
                     <button type="button">Cancel</button>
                 </Link>
