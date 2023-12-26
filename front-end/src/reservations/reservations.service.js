@@ -13,7 +13,7 @@ async function createReservation(reservationData) {
   
     if(!response.ok){
       const errorData = await response.json();
-      console.log("response json: ", errorData)
+      console.log("response json: ", errorData )
       throw new Error(errorData.error.message || 'Failed to create reservation');
     }
   

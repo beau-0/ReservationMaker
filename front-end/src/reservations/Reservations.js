@@ -11,34 +11,37 @@ function Reservations () {
     const [mobileNumber, setMobileNumber] = useState("");
     const [reservationDate, setReservationDate] = useState("");
     const [reservationTime, setReservationTime] = useState("");
-    const [partySize, setPartySize] = useState("");
+    const [people, setPeople] = useState("");
     const history = useHistory();
     const [errors, setErrors] = useState({});
 
     const validateForm = () => {
-        const errors = {};
-        if (!partySize.trim()) {
-            errors.partySize = "Party size is required.";
-        } else if (isNaN(partySize) || parseInt(partySize, 10) <= 0) {
-            errors.partySize = "Party size must be between 1 and 10.";
+        const validationErrors = {};
+        if (!people.trim()) {
+            validationErrors.people = "Number of people is required.";
+        } else if (isNaN(people) || parseInt(people, 20) <= 0) {
+            validationErrors.people = "Number of people must be between 1 and 20.";
         }
-        return errors;
+        return validationErrors;
     }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         const newReservation = {
-            first_name: firstName, 
-            last_name: lastName,
-            mobile_number: mobileNumber,
-            reservation_date: reservationDate,
-            reservation_time: reservationTime,
-            people: partySize,
+            data: {
+                first_name: firstName, 
+                last_name: lastName,
+                mobile_number: mobileNumber,
+                reservation_date: reservationDate, 
+                reservation_time: reservationTime,
+                people: Number(people)
+            }
         };
 
         try {
             const validationErrors = validateForm();
+            console.log("validation errors: ", validationErrors);
             if (Object.keys(errors).length === 0) {
                 await service.createReservation(newReservation);
                 history.push("/dashboard");
@@ -99,16 +102,16 @@ function Reservations () {
                     onChange={(e) => {setReservationTime(e.target.value)}} 
                     required
                 />
-                <label htmlFor="partySize">Number of People</label>
+                <label htmlFor="people">Number of People</label>
                 <input 
                     type="number" 
-                    id="partySize" 
-                    value={partySize}
-                    onChange={(e) => {setPartySize(e.target.value)}} 
+                    id="people" 
+                    value={people}
+                    onChange={(e) => {setPeople(e.target.value)}} 
                     placeholder="Number of people"
                     required
                 />
-                
+
                 {/* Display ErrorAlert if there's a submission error */}
                 {errors.submit && <ErrorAlert error={{ message: errors.submit }} />}
                 <Link to="/dashboard">
