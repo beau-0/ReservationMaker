@@ -19,17 +19,14 @@ function validateReservationData(req, res, next) {
 
   const reservationData = req.body.data;
   const reservationDate = new Date(req.body.data.reservation_date);
+  console.log("reql: ", req.body)
+  if (!req.body.data) {
+    console.log("entered missing data check 1");
+    return res.status(400).json({ error: 'Missing data.' });
+  }
 
-  //Day and time for "today" adjusted to EST
-  const today = new Date();
-  const easternTimeZone = 'America/New_York';
-  const options = { timeZone: easternTimeZone, year: 'numeric', month: '2-digit', day: '2-digit' };
-  const dateFormatter = new Intl.DateTimeFormat('en-US', options);
-  const estToday = dateFormatter.format(today); // eastern timezone today
-
-  console.log(`estToday: ${estToday}, reservationDate: ${reservationDate}`);
-
-  if (reservationDate.getDay() === 2) {     // Tuesday is 2
+  //US-02 validation
+  /*if (reservationDate.getDay() === 2) {     // Tuesday is 2
     return res.status(400).json({
       error: "The restaurant is closed on Tuesdays. Please choose another date."
     });
@@ -40,6 +37,7 @@ function validateReservationData(req, res, next) {
       error: "Reservations cannot be made for any day prior to today. Please choose a today or a future date."
     });
   }
+  */
 
   const requiredFields = [
     'first_name',
@@ -50,8 +48,10 @@ function validateReservationData(req, res, next) {
     'people'
   ];
 
-  if (!req.body.data) 
-    {return res.status(400).json({ error: 'Missing data.' })}
+  if (!req.body.data) {
+    console.log("entered missing data check 2");
+    return res.status(400).json({ error: 'Missing data.' })
+  }
 
   const missingFields = requiredFields.filter((field) => !reservationData[field]);
   if (missingFields.length > 0 ) {
