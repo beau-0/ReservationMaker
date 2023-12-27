@@ -18,26 +18,23 @@ function Reservations () {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        const reservationDateUTC = new Date(reservationDate);
-        const reservationDateEST = new Date(reservationDateUTC.toLocaleString("en-US", {timeZone: "America/New_York"}));
-        console.log("res date: ", reservationDate);
         
+        const localDate = new Date(reservationDate);
         const newReservation = {
             data: {
                 first_name: firstName, 
                 last_name: lastName,
                 mobile_number: mobileNumber,
-                reservation_date: reservationDateEST.toISOString(), // Convert to UTC string for consistency
+                reservation_date: reservationDate,
                 reservation_time: reservationTime,
                 people: Number(people)
             }
         };
 
         try {
-                await service.createReservation(newReservation);
-                setErrors({});
-                history.push("/dashboard");
+            await service.createReservation(newReservation);
+            setErrors({});
+            history.push("/dashboard");
             }
         catch (error) {
             console.log("error.message:", error.message);

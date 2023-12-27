@@ -2,6 +2,7 @@ const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
 
 async function createReservation(reservationData) {
+  console.log("reservation data: ", reservationData)
     const response = await fetch(`${API_BASE_URL}/reservations/new`,
     {
       method: 'POST',
