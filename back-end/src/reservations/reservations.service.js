@@ -11,9 +11,11 @@ function create (reservationData) {
         .returning('reservation_id');
 }
 
-function list () {
+function list (date) {
     return knex ('reservations')
-        .select('*');
+        .select('*')
+        .where('reservation_date', date)
+        .orderBy('reservation_time', 'asc');
 }
 
 module.exports = {
