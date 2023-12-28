@@ -111,21 +111,10 @@ function validateReservationData(req, res, next) {
 
 async function list(req, res) {
   const date =  req.query.date;
-  //const reservations = await service.list(date);
-  //res.json({
-  //  data: reservations,
-  //});
-  return [
-    {
-        "first_name": "Rick",
-        "last_name": "Sanchez",
-        "mobile_number": "202-555-0164",
-        "reservation_date": "2020-12-31",
-        "reservation_time": "20:00:00",
-        "people": 6,
-        "created_at": "2020-12-10T08:30:32.326Z",
-        "updated_at": "2020-12-10T08:30:32.326Z"
-      }]
+  const reservations = await service.list(date);
+  res.json({
+    data: reservations,
+  });
 }
 
 async function create(req, res, next) {
