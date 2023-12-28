@@ -19,25 +19,19 @@ function validateReservationData(req, res, next) {
 
   const reservationData = req.body.data;
   const reservationDate = new Date(req.body.data.reservation_date);
-  console.log("reql: ", req.body)
+
+  // vars needed to check day of reservation date, day of week, and "today" in EST 
+  let resTime = req.body.data.reservation_time;
+  let resDate = req.body.data.reservation_date;
+  let joinedDateTime = resDate + "T" + resTime;
+  let reservationDateAndTime = new Date(joinedDateTime);
+  let reservationDayOfWeek = reservationDateAndTime.getDay();
+  var easternTimeString = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+  var easternDateToday = new Date(easternTimeString);
+  
   if (!req.body.data) {
-    console.log("entered missing data check 1");
     return res.status(400).json({ error: 'Missing data.' });
   }
-
-  //US-02 validation
-  /*if (reservationDate.getDay() === 2) {     // Tuesday is 2
-    return res.status(400).json({
-      error: "The restaurant is closed on Tuesdays. Please choose another date."
-    });
-  }
-
-  if (reservationDate < estToday) {
-    return res.status(400).json({
-      error: "Reservations cannot be made for any day prior to today. Please choose a today or a future date."
-    });
-  }
-  */
 
   const requiredFields = [
     'first_name',
@@ -49,7 +43,6 @@ function validateReservationData(req, res, next) {
   ];
 
   if (!req.body.data) {
-    console.log("entered missing data check 2");
     return res.status(400).json({ error: 'Missing data.' })
   }
 
@@ -73,6 +66,31 @@ function validateReservationData(req, res, next) {
   const reservationTime = req.body.data.reservation_time;
     if (!timeRegex.test(reservationTime)) {
       return res.status(400).json({ error: `'reservation_time' must be a valid time in HH:mm format.` });
+    }
+    console.log("reservation timex req: ", reservationData.reservation_time );
+    console.log("reservation Datex req: ", reservationData.reservation_date );
+    console.log("reservation datex newDate: ", reservationDate );
+    console.log("reservation Datex - newDate.toDay: ", reservationDate.getDay());
+
+    let joinDateTime = resDate + "T" + reservationTime;
+    let resDateAndTime = new Date(joinDateTime);
+    let dayOfWeek = resDateAndTime.getDay();
+    console.log("resDateAndTime: ", resDateAndTime, "day of week: ", dayOfWeek);
+
+
+    //US-02 validation
+    if (reservationDayOfWeek === 2) {     // Tuesday is 2
+      return res.status(400).json({
+        error: "The restaurant is closed on Tuesdays. Please choose another date."
+      });
+    }
+    
+    //US-02 validation 
+    let today = new Date();
+    if (reservationDateAndTime < easternDateToday) {
+      return res.status(400).json({
+        error: "Reservations cannot be made for any day prior to today. Please choose a today or a future date."
+      });
     }
 
   next(); // Move to the next middleware or route handler;
