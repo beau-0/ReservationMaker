@@ -20,15 +20,27 @@ function validateReservationData(req, res, next) {
   const reservationData = req.body.data;
   const reservationDate = new Date(req.body.data.reservation_date);
 
-  // vars needed to check day of reservation date, day of week, and "today" in EST 
+  // Extracting data from the request
   let resTime = req.body.data.reservation_time;
   let resDate = req.body.data.reservation_date;
+
+  // Combine date and time strings and create a Date object for the reservation
   let joinedDateTime = resDate + "T" + resTime;
   let reservationDateAndTime = new Date(joinedDateTime);
+
+  // Create a Date object for the current date in Eastern Time
+  let currentEasternDate = new Date();
+  currentEasternDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
+
+  // Get the day of the week for the reservation
   let reservationDayOfWeek = reservationDateAndTime.getDay();
-  var easternTimeString = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-  var easternDateToday = new Date(easternTimeString);
-  
+
+  // Set the minimum allowed time for reservations (10:30 AM)
+  let minReservationTime = new Date(currentEasternDate);
+  minReservationTime.setHours(5, 30); //utc, -05 offset 
+
+  console.log("xx: ", resDate, resTime, "EST Today: ", easternDateToday, )
+
   if (!req.body.data) {
     return res.status(400).json({ error: 'Missing data.' });
   }
@@ -67,16 +79,10 @@ function validateReservationData(req, res, next) {
     if (!timeRegex.test(reservationTime)) {
       return res.status(400).json({ error: `'reservation_time' must be a valid time in HH:mm format.` });
     }
-    console.log("reservation timex req: ", reservationData.reservation_time );
-    console.log("reservation Datex req: ", reservationData.reservation_date );
-    console.log("reservation datex newDate: ", reservationDate );
-    console.log("reservation Datex - newDate.toDay: ", reservationDate.getDay());
 
     let joinDateTime = resDate + "T" + reservationTime;
     let resDateAndTime = new Date(joinDateTime);
     let dayOfWeek = resDateAndTime.getDay();
-    console.log("resDateAndTime: ", resDateAndTime, "day of week: ", dayOfWeek);
-
 
     //US-02 validation
     if (reservationDayOfWeek === 2) {     // Tuesday is 2
@@ -93,15 +99,33 @@ function validateReservationData(req, res, next) {
       });
     }
 
+    //US-03 validation
+    if (reservationDateAndTime < minReservationTime || reservationDateAndTime > maxReservationTime) {
+      return res.status(400).json({
+        error: "Restaurant reservations hours are 10:30 AM to 9:30 PM (EST)."
+      });
+    }
+
   next(); // Move to the next middleware or route handler;
 }
 
 async function list(req, res) {
   const date =  req.query.date;
-  const reservations = await service.list(date);
-  res.json({
-    data: reservations,
-  });
+  //const reservations = await service.list(date);
+  //res.json({
+  //  data: reservations,
+  //});
+  return [
+    {
+        "first_name": "Rick",
+        "last_name": "Sanchez",
+        "mobile_number": "202-555-0164",
+        "reservation_date": "2020-12-31",
+        "reservation_time": "20:00:00",
+        "people": 6,
+        "created_at": "2020-12-10T08:30:32.326Z",
+        "updated_at": "2020-12-10T08:30:32.326Z"
+      }]
 }
 
 async function create(req, res, next) {
