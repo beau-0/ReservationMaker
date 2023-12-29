@@ -111,7 +111,11 @@ function validateReservationData(req, res, next) {
 
 async function list(req, res) {
   const date =  req.query.date;
-  const reservations = await service.list(date);
+  if (!date) {
+    const reservations = await service.list();
+  } else {
+    const reservations = await service.listDate(date);
+  }
   res.json({
     data: reservations,
   });
