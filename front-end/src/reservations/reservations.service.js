@@ -23,6 +23,6 @@ async function createReservation(reservationData) {
   }
 
 
-export default {
+module.exports = {
     createReservation
 }
