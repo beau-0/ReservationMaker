@@ -96,8 +96,8 @@ function validateReservationData(req, res, next) {
 
     //US-03 validation
     const reservationMinutes = convertToMinutes(reservationTime);
-    const openMinutes = convertToMinutes("10:30");
-    const closeMinutes = convertToMinutes("21:30");
+    //const openMinutes = convertToMinutes("10:30");
+    //const closeMinutes = convertToMinutes("21:30");
     if (reservationMinutes < convertToMinutes("10:30") || reservationMinutes > convertToMinutes("21:30")) {
       return res.status(400).json({
         error: "Restaurant reservations hours are 10:30 AM to 9:30 PM (EST)."

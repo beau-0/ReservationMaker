@@ -1,12 +1,12 @@
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
 
-async function createReservation(reservationData) {
+async function createTableAssignment (tableAssignment) {
 
-    const response = await fetch(`${API_BASE_URL}/reservations/new`,
+    const response = await fetch(`${API_BASE_URL}/tables/new`,
     {
       method: 'POST',
-      body: JSON.stringify(reservationData),
+      body: JSON.stringify(tableAssignment),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -15,12 +15,11 @@ async function createReservation(reservationData) {
     if(!response.ok){
       const errorData = await response.json();
       const errorMessage = errorData.error;
-      throw new Error(errorMessage || 'Failed to create reservation');
+      throw new Error(errorMessage || 'Failed to complete table assignment.');
     }
   
     const responseData = await response.json();
     return responseData.data;
   }
 
-
-  export { createReservation };
+  export { createTableAssignment };

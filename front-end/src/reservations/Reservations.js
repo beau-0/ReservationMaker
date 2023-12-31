@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
 
-
 const service = require("./reservations.service");
 
 function Reservations () {
@@ -19,7 +18,6 @@ function Reservations () {
     const handleSubmit = async (event) => {
         event.preventDefault();
         
-        const localDate = new Date(reservationDate);
         const newReservation = {
             data: {
                 first_name: firstName, 
@@ -44,7 +42,7 @@ function Reservations () {
                 setErrors({submit: "Failed to submit reservation. Please try again." });
             }
         }
-    }
+    } 
           
     return (
         <div>
