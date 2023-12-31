@@ -18,30 +18,12 @@ async function reservationExists(req, res, next) {
 function validateReservationData(req, res, next) {
 
   const reservationData = req.body.data;
-  const reservationDate = new Date(req.body.data.reservation_date);
-
   // Extracting data from the request
-  let resTime = req.body.data.reservation_time;
-  let resDate = req.body.data.reservation_date;
+  let reservationTime = req.body.data.reservation_time;
+  let reservationDate = req.body.data.reservation_date;
+  
 
-  // Combine date and time strings and create a Date object for the reservation
-  let joinedDateTime = resDate + "T" + resTime;
-  let reservationDateAndTime = new Date(joinedDateTime);
-
-  // Create a Date object for the current date in Eastern Time
-  let currentEasternDate = new Date();
-  currentEasternDate.toLocaleString('en-US', { timeZone: 'America/New_York' });
-
-  // Get the day of the week for the reservation
-  let reservationDayOfWeek = reservationDateAndTime.getDay();
-
-  // Set the minimum allowed time for reservations (10:30 AM)
-  let minReservationTime = new Date(currentEasternDate);
-  minReservationTime.setHours(5, 30); //utc, -05 offset 
-
-  console.log("xx: ", resDate, resTime, "EST Today: ", easternDateToday, )
-
-  if (!req.body.data) {
+  if (Object.keys(req.body.data).length === 0 || !req.body.data) {
     return res.status(400).json({ error: 'Missing data.' });
   }
 
@@ -53,10 +35,6 @@ function validateReservationData(req, res, next) {
     'reservation_time',
     'people'
   ];
-
-  if (!req.body.data) {
-    return res.status(400).json({ error: 'Missing data.' })
-  }
 
   const missingFields = requiredFields.filter((field) => !reservationData[field]);
   if (missingFields.length > 0 ) {
@@ -70,37 +48,57 @@ function validateReservationData(req, res, next) {
     return res.status(400).json({ error: 'Invalid number of people.' });
   }
 
-    if (isNaN(reservationDate.getTime())) {
-      return res.status(400).json({ error: `'reservation_date' must be a date.` });
-    }
+  let resDateFormatted = new Date(reservationDate);
+  if (isNaN(resDateFormatted.getTime())) {
+    return res.status(400).json({ error: `'reservation_date' must be a date.` });
+  }
 
   const timeRegex = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
-  const reservationTime = req.body.data.reservation_time;
     if (!timeRegex.test(reservationTime)) {
       return res.status(400).json({ error: `'reservation_time' must be a valid time in HH:mm format.` });
     }
 
-    let joinDateTime = resDate + "T" + reservationTime;
-    let resDateAndTime = new Date(joinDateTime);
-    let dayOfWeek = resDateAndTime.getDay();
+  // Create a new Date object for the current date and time in Eastern Time
+  let options = { weekday: "long", year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", timeZone: "America/New_York" };
+  let dateTimeFormatter = new Intl.DateTimeFormat("en-US", options);
 
+  // Extract components from the user-entered date and time
+  let [year, month, day] = reservationDate.split('-');
+  let [hour, minute] = reservationTime.split(':');
+
+  // Create a formatted string
+  let reservationDateTimeFormatted = `${new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date(year, month - 1, day))}, ${new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", timeZone: "America/New_York" }).format(new Date(year, month - 1, day, hour, minute))}`;
+  let currentEasternDateFormatted = dateTimeFormatter.format(new Date());
+
+  let reservationDateObject = new Date(reservationDateTimeFormatted);
+  let currentEasternDateObject = new Date(currentEasternDateFormatted);
+  let reservationDayOfWeekNumber = reservationDateObject.getDay();
+
+  //convert time to minutes to enable comparisons 
+  const convertToMinutes = (timeString) => {
+  const [hours, minutes] = timeString.split(":").map(Number);
+    return hours * 60 + minutes;
+  }; 
+    
     //US-02 validation
-    if (reservationDayOfWeek === 2) {     // Tuesday is 2
+    if (reservationDayOfWeekNumber === 2) {     // Tuesday is 2
       return res.status(400).json({
         error: "The restaurant is closed on Tuesdays. Please choose another date."
       });
     }
     
     //US-02 validation 
-    let today = new Date();
-    if (reservationDateAndTime < easternDateToday) {
+    if (reservationDateObject <= currentEasternDateObject) {
       return res.status(400).json({
         error: "Reservations cannot be made for any day prior to today. Please choose a today or a future date."
       });
     }
 
     //US-03 validation
-    if (reservationDateAndTime < minReservationTime || reservationDateAndTime > maxReservationTime) {
+    const reservationMinutes = convertToMinutes(reservationTime);
+    const openMinutes = convertToMinutes("10:30");
+    const closeMinutes = convertToMinutes("21:30");
+    if (reservationMinutes < convertToMinutes("10:30") || reservationMinutes > convertToMinutes("21:30")) {
       return res.status(400).json({
         error: "Restaurant reservations hours are 10:30 AM to 9:30 PM (EST)."
       });
@@ -120,9 +118,8 @@ async function list(req, res) {
   res.json({ data });
 }
 
-async function create(req, res, next) {
+async function create(req, res) {
     const reservationData = req.body.data; 
-    const reservationId = await service.create(reservationData);
     res.status(201).json({ data: reservationData });
 }
 

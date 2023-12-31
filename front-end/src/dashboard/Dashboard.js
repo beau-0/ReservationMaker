@@ -16,7 +16,7 @@ function Dashboard({ date }) {
 
   useEffect(() => {
     loadDashboard();
-  }, [displayDate, loadDashboard]);
+  }, [displayDate]);
 
   function loadDashboard() {
     const abortController = new AbortController();
