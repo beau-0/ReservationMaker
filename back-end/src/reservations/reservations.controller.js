@@ -88,7 +88,7 @@ function validateReservationData(req, res, next) {
     }
     
     //US-02 validation 
-    if (reservationDateObject <= currentEasternDateObject) {
+    if (reservationDateObject < currentEasternDateObject) {
       return res.status(400).json({
         error: "Reservations cannot be made for any day prior to today. Please choose a today or a future date."
       });
@@ -109,21 +109,31 @@ function validateReservationData(req, res, next) {
 
 async function list(req, res) {
   const { date } = req.query
-  let data
+  let data;
   if (date) {
-    data = await service.listDate(date)
+    data = await service.listDate(date);
   } else {
-    data = await service.list()
+    data = await service.list();
   }
   res.json({ data });
 }
 
 async function create(req, res) {
     const reservationData = req.body.data; 
+    const insertedReservation = await service.create(reservationData);
     res.status(201).json({ data: reservationData });
+}
+
+async function seatTable(req, res) {
+    const {reservation_id} = req.params;
+    console.log("xxx: ", req.body.data)
+    const table_id = req.body.data.table_id;
+    await service.assignTable(table_id, reservation_id)
+    res.json({ message: 'Table assigned successfully' });
 }
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
   create: [validateReservationData, asyncErrorBoundary(create)],
+  seatTable: [asyncErrorBoundary(seatTable)]
 };

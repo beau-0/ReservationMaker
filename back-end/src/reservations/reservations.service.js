@@ -6,9 +6,13 @@ function create (reservationData) {
         created_at: new Date(),
         updated_at: new Date(),
     }
+    try {
     return knex ('reservations')
         .insert(timeStampedData)
-        .returning('reservation_id');
+        .returning('*');
+    } catch (error) {
+        throw error; // Propagate the error to be caught by the asyncErrorBoundary
+    }
 }
 
 function listDate (date) {
@@ -24,8 +28,16 @@ function list() {
       .orderBy("reservation_time");
   };
 
+function assignTable(table_id, reservation_id) {
+    console.log("table id: ", table_id)
+    return knex("tables")
+    .where({ table_id })
+    .update({ reservation_id: reservation_id });
+}
+
 module.exports = {
     create,
     list, 
     listDate,
+    assignTable
   };

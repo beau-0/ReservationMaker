@@ -44,7 +44,8 @@ function Tables() {
                 <label htmlFor="table_name">Table Name</label>
                 <input 
                     type="type" 
-                    id="table_name" 
+                    id="table_name"
+                    name="table_name" 
                     value={tableName} 
                     onChange={(e) => {setTableName(e.target.value)}} 
                     placeholder="Table Name"
@@ -53,7 +54,8 @@ function Tables() {
                 <label htmlFor="capacity">Table Capacity</label>
                 <input 
                     type="number" 
-                    id="capacity" 
+                    id="capacity"
+                    name="capacity" 
                     value={capacity} 
                     onChange={(e) => {setCapacity(e.target.value)}} 
                     placeholder="Table Capacity"
