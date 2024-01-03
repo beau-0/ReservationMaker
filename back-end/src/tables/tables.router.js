@@ -10,8 +10,13 @@ const cors = require("cors");
 
 router.use(cors());
 
+router.route("/")
+    .post(controller.create)
+    .get(controller.listTables)
+    .all(methodNotAllowed)
+
 router.route("/:table_id/seat")
     .put(controller.seatTable)
-    .all(methodNotAllowed)
+    .all(methodNotAllowed) 
 
 module.exports = router;

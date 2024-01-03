@@ -13,7 +13,6 @@ async function listDashboard(req, res) {
   try {
     const tablesData = await service.listTables();
     const reservationsData = await service.listReservationsByDate(req.query.date);
-    console.log("ReservationsX: ", reservationsData)
     res.json({ reservations: reservationsData, tables: tablesData });
   } catch (error) {
       console.error("Error loading dashboard data:", error);

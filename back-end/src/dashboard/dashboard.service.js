@@ -1,7 +1,6 @@
 const knex = require("../db/connection"); 
 
 function listReservationsByDate (date) {
-    console.log("date to retrieve: ", date)
     return knex ("reservations")
         .select("*")
         .where("reservation_date", date)

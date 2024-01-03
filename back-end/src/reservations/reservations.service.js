@@ -29,15 +29,22 @@ function list() {
   };
 
 function assignTable(table_id, reservation_id) {
-    console.log("table id: ", table_id)
     return knex("tables")
     .where({ table_id })
     .update({ reservation_id: reservation_id });
+}
+
+function read (reservation_id) {
+    return knex ('reservations')
+        .select('*')
+        .where('reservation_id', reservation_id)
+        .first()
 }
 
 module.exports = {
     create,
     list, 
     listDate,
-    assignTable
+    assignTable,
+    read
   };

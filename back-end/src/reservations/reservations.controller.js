@@ -132,8 +132,21 @@ async function seatTable(req, res) {
     res.json({ message: 'Table assigned successfully' });
 }
 
+async function read(req, res) {
+  const { reservation_id } = req.params;
+  let data = await service.read(reservation_id);
+
+  if(!data){
+    res.status(404).json({ error: `${reservation_id} not found.`});
+    return;
+  }
+  res.status(200).json({ data });
+}
+
+
 module.exports = {
   list: [asyncErrorBoundary(list)],
   create: [validateReservationData, asyncErrorBoundary(create)],
-  seatTable: [asyncErrorBoundary(seatTable)]
+  seatTable: [asyncErrorBoundary(seatTable)],
+  read
 };
