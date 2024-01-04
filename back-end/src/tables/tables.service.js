@@ -13,9 +13,10 @@ function getTableByName(tableName) {
   }
 
 function getTableById(table_id) {
-return knex("tables")
-    .where({ table_id })
-    .first();
+    return knex("tables")
+    .select("*")
+    .where("table_id", table_id)
+    .first()
 }
 
 function getReservationById(reservation_id) {

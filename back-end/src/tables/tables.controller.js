@@ -1,6 +1,29 @@
 const service = require("./tables.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
+async function tableExists (req, res, next) {
+  const { table_id } = req.params;
+  const table = await service.getTableById(table_id);
+    if (table) {
+      res.locals.table = table;
+      return next();
+    }
+    next({
+      status: 404,
+      message: `Table ${table_id} cannot be found.` });
+}
+
+function tableOccupied (req, res, next) {
+  const { table_id } = res.locals.table.table_id;
+
+  if (!res.locals.table.reservation_id) {
+    return next({
+      status: 400,
+      message: `Table ${table_id} is not occupied`,});
+  }
+  next();
+}
+
 async function validateTableData(req, res, next) {
   const { reservation_id, table_name, capacity } = req.body.data;
 
@@ -92,38 +115,14 @@ async function seatTable(req, res) {
 } 
 
 async function unseatTable (req, res) {
-  const { table_id } = req.params;
-
-  try {
-    // Find the table by ID
-    const table = await service.getTableById(table_id);
-
-    // Check if the table exists
-    if (table === undefined) {
-      console.log("TABLE: ", table)
-      return res.status(404).json({ error: `Table ${table_id} not found.` });
-    }
-
-    // Check if the table is occupied
-    if (table.reservation_id === null) {
-      console.log("TABLE2: ", table)
-      return res.status(400).json({ error: `Table ${table_id} is not occupied.` });
-    }
-
-    // Unseat the table using the Knex function
-    await service.unseatTable(table_id);
-    res.status(204).end();
-  } catch (error) {
-    // Handle errors and respond with an error status
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+  const table_id = res.locals.table.table_id;
+  await service.unseatTable(table_id);
+  res.status(200).json({ table_id })
 }
-
 
 module.exports = {
     seatTable: [validateSeatingData, asyncErrorBoundary(seatTable)],
     create: [validateTableData, asyncErrorBoundary(create)],
     listTables,
-    delete: [unseatTable]
+    delete: [tableExists, tableOccupied, unseatTable]
   };
