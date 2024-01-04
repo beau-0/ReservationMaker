@@ -44,11 +44,18 @@ async function listTables() {
     }
 }
 
+async function unseatTable(table_id) {
+    return knex('tables')
+        .where({ table_id: table_id })
+        .update({ reservation_id: null });
+}
+
 module.exports = {
     assignTable,
     getTableByName, 
     getReservationById, 
     createTable, 
     listTables, 
-    getTableById
+    getTableById, 
+    unseatTable
   };

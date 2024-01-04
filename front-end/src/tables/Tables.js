@@ -15,15 +15,16 @@ function Tables() {
     const handleSubmit = async (event) => {
             event.preventDefault();
 
-        const newTableAssignment = {
+        const newTableData = {
             data: {
                 table_name: tableName, 
                 capacity: capacity,
+                reservation_id: null,
             }
         };
 
         try {
-            await service.createTableAssignment(newTableAssignment);
+            await service.createTable(newTableData);
             setErrors({});
             history.push("/dashboard");
             }

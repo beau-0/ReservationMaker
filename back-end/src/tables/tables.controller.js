@@ -91,8 +91,39 @@ async function seatTable(req, res) {
   res.status(200).json({ message: 'Table assigned successfully' });
 } 
 
+async function unseatTable (req, res) {
+  const { table_id } = req.params;
+
+  try {
+    // Find the table by ID
+    const table = await service.getTableById(table_id);
+
+    // Check if the table exists
+    if (table === undefined) {
+      console.log("TABLE: ", table)
+      return res.status(404).json({ error: `Table ${table_id} not found.` });
+    }
+
+    // Check if the table is occupied
+    if (table.reservation_id === null) {
+      console.log("TABLE2: ", table)
+      return res.status(400).json({ error: `Table ${table_id} is not occupied.` });
+    }
+
+    // Unseat the table using the Knex function
+    await service.unseatTable(table_id);
+    res.status(204).end();
+  } catch (error) {
+    // Handle errors and respond with an error status
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+
 module.exports = {
     seatTable: [validateSeatingData, asyncErrorBoundary(seatTable)],
     create: [validateTableData, asyncErrorBoundary(create)],
     listTables,
+    delete: [unseatTable]
   };

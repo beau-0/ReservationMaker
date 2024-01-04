@@ -4,6 +4,7 @@ const API_BASE_URL =
 async function fetchTables(date) {
     try {
         const response = await fetch(`${API_BASE_URL}/dashboard?date=${date}`);
+        
         if (!response.ok) {
             throw new Error("Failed to fetch tables.");
         }
@@ -30,7 +31,26 @@ async function fetchReservations(date) {
     }
 }
 
+const finishTable = async (tableId) => {
+    console.log("asdf", tableId)
+    try {
+      const response = await fetch(`${API_BASE_URL}/tables/${tableId}/seat`, {
+        method: 'DELETE',
+      });
+      console.log("hitting front service file");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      throw new Error(`Failed to finish table: ${error.message}`);
+    }
+};
+
+
+
 module.exports = {
     fetchTables,
     fetchReservations,
+    finishTable
     };

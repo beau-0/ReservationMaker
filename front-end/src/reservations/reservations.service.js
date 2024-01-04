@@ -50,7 +50,6 @@ async function assignTable (table_id, reservation_id) {
 async function listTables() {
   let date = '2025-12-01';
   try {
-      console.log("we're hitting fetch tables");
       const response = await fetch(`${API_BASE_URL}/dashboard?date=${date}`);
       if (!response.ok) {
           throw new Error("Failed to fetch tables.");

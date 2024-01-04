@@ -60,6 +60,27 @@ function Dashboard({ date }) {
     return `${year}-${month}-${day}`;
   };
 
+  const handleFinish = async (table_id) => {
+
+    const isConfirmed = window.confirm("Is this table ready to seat new guests? This cannot be undone.")
+
+    if (isConfirmed) {
+      try {
+        // Send DELETE request to release the table
+
+        await service.finishTable(table_id);
+        // Refresh the list of tables
+        const updatedTables = await service.fetchTables(formatDate(displayDate));
+        
+        setTables(updatedTables);
+        setErrorState({}); // Clear any previous error state
+       } catch (error) {
+        console.error("Error finishing table:", error);
+        setErrorState({ message: error.message });
+      }   
+    }
+  };
+
   return (
     <main>
       <h1>Dashboard</h1>
@@ -105,16 +126,31 @@ function Dashboard({ date }) {
       {/* Tables Section */}
       <section>
       <h2>Tables for {formatDate(displayDate)}</h2>
-        <ul>
-          {tables.map((table) => (
-            <li key={table.table_id}>
-              {table.table_name} - Capacity: {table.capacity} - {" "}
-              <span data-table-id-status={table.table_id}>
-                {table.reservation_id ? "Occupied" : "Free"}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <ul>
+  {tables.map((table) => (
+    <li key={table.table_id}>
+      {table.table_name} - Capacity: {table.capacity} - {" "}
+      {table.reservation_id ? (
+        <>
+          <span data-table-id-status={table.table_id}>
+            Occupied {" "}
+            <button
+              type="button"
+              data-table-id-finish={table.table_id}
+              onClick={() => handleFinish(table.table_id)}
+            >
+              Finish
+            </button>
+          </span>
+        </>
+      ) : (
+        <span data-table-id-status={table.table_id}>
+          Open
+        </span>
+      )}
+    </li>
+  ))}
+</ul>
       </section>
 
     </main>

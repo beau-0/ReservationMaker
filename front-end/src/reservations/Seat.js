@@ -32,12 +32,16 @@ function SeatReservationPage() {
   const handleSeatReservation = async () => {
     try {
     await assignTable(selectedTable, reservation_id);
-    
     history.push("/dashboard");
     } catch (error) {
-        setErrors(error);
-        console.error(error)
+        console.error("Error assigning table:", error);
+        setErrors("Failed to assign table. Please try again.");
     }
+  };
+
+  const handleCancel = () => {
+    // Redirect to the dashboard
+    history.push("/dashboard");
   };
 
   return (
@@ -52,6 +56,7 @@ function SeatReservationPage() {
           </option>
         ))}
       </select>
+      <button onClick={handleCancel}>Cancel</button>
       <button onClick={handleSeatReservation} disabled={!selectedTable}>
         Seat Reservation
       </button>
