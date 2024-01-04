@@ -5,14 +5,17 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
  * List handler for reservation resources
  */
 
-async function reservationExists(req, res, next) {
-  const {reservationId} = req.params;
-  const reservation = await service.read(reservationId);
-  if(reservation) {
+async function reservationExists (req, res, next) {
+  const { reservation_id } = req.params;
+  const reservation = await service.read(reservation_id);
+
+    if (reservation) {
       res.locals.reservation = reservation;
       return next();
-  }
-  next({ status: 404, message: `Reservation cannot be found. `})
+    }
+    next({
+      status: 404,
+      message: `Reservation ${reservation_id} cannot be found.` });
 }
 
 function validateReservationData(req, res, next) {
@@ -120,6 +123,12 @@ async function list(req, res) {
 
 async function create(req, res) {
     const reservationData = req.body.data; 
+    const status = reservationData.status;
+
+    if (status === 'seated' || status === 'finished') {
+      return res.status(400).json({ error: `Reservation status is "${status}. Invalid reservation status.`});
+    }
+
     const insertedReservation = await service.create(reservationData);
     res.status(201).json({ data: reservationData });
 }
@@ -143,10 +152,44 @@ async function read(req, res) {
   res.status(200).json({ data });
 }
 
+async function updateReservationStatus(req, res, next) {
+  const { reservation_id } = req.params;
+  const { status } = req.body.data;
+
+  try {
+    const updatedReservation = await service.updateReservationStatus(
+      reservation_id,
+      status
+    );
+
+    res.status(200).json({ data: updatedReservation });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function validateStatusData (req, res, next) {
+  const { reservation_id } = req.params;
+  const { status } = req.body.data;
+  const reservation = res.locals.reservation;
+
+    console.log("XXXX", `Reservation ${reservation_id} ${reservation.reservation_id} status is ${reservation.status}.`)
+  if (reservation.status !== "finished" && reservation.status !== "seated" && reservation.status !== "booked") {
+    return res.status(400).json({ error: `Reservation ${reservation_id} status is ${reservation.status}.` });
+  }
+
+  if (reservation.status === 'finished') {
+    return res.status(400).json({ error: `Reservation ${reservation_id} is in a finished status.` });
+  }
+
+  next();
+}
+
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
   create: [validateReservationData, asyncErrorBoundary(create)],
   seatTable: [asyncErrorBoundary(seatTable)],
-  read
+  read, 
+  updateReservationStatus: [asyncErrorBoundary(reservationExists), validateStatusData, updateReservationStatus],
 };
