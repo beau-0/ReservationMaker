@@ -1,5 +1,6 @@
 const service = require("./tables.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
+const reservations_service = require("../reservations/reservations.service.js");
 
 async function tableExists (req, res, next) {
   const { table_id } = req.params;
@@ -110,7 +111,20 @@ async function listTables(req, res) {
 async function seatTable(req, res) {
   const {table_id} = req.params;
   const reservation_id = req.body.data.reservation_id;
-  await service.assignTable(table_id, reservation_id)
+  const newStatus = "seated"
+
+  //Check the status of the current reservation
+  const currentReservation = await reservations_service.read(reservation_id);
+  if (currentReservation.status === newStatus) {
+    return res.status(400).json({ error: `Reservation ${reservation_id} is already seated.` });
+  }
+
+  // assign reservation_id to table
+  const tableAssigned = await service.assignTable(table_id, reservation_id);
+
+  // update reservation status from "booked" to "seated          "
+  const statusUpdated = await reservations_service.updateReservationStatus(reservation_id, newStatus);
+
   res.status(200).json({ message: 'Table assigned successfully' });
 } 
 

@@ -2,8 +2,8 @@ const knex = require("../db/connection");
 
 function assignTable(table_id, reservation_id) {
     return knex("tables")
-        .where({ table_id })
-        .update({ reservation_id: reservation_id });
+        .where({ table_id }, )
+        .update({ reservation_id }, ["*"])
 }
 
 function getTableByName(tableName) {

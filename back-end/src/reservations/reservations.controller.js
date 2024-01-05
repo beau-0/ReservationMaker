@@ -162,7 +162,7 @@ async function updateReservationStatus(req, res, next) {
       status
     );
 
-    res.status(200).json({ data: updatedReservation });
+    res.status(200).json({ data: { status: req.body.data.status } });
   } catch (error) {
     next(error);
   }
@@ -173,7 +173,13 @@ async function validateStatusData (req, res, next) {
   const { status } = req.body.data;
   const reservation = res.locals.reservation;
 
-    console.log("XXXX", `Reservation ${reservation_id} ${reservation.reservation_id} status is ${reservation.status}.`)
+  if (status === 'unknown') {
+    return next({
+      status: 400,
+      message: `Invalid status: ${status}`,
+    });
+  }
+
   if (reservation.status !== "finished" && reservation.status !== "seated" && reservation.status !== "booked") {
     return res.status(400).json({ error: `Reservation ${reservation_id} status is ${reservation.status}.` });
   }

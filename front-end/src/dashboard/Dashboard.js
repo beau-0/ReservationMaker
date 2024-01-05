@@ -23,9 +23,14 @@ function Dashboard({ date }) {
       try {
         const formattedDate = formatDate(displayDate);
         const reservationsData = await service.fetchReservations(formattedDate);
+
+        // Filter out finished reservations 
+        const activeReservations = reservationsData.filter(reservation => reservation.status !== 'finished');
+
+        // Fetch all tables
         const tablesData = await service.fetchTables(formattedDate);
 
-        setReservations(reservationsData);
+        setReservations(activeReservations);
         setTables(tablesData);
         setErrorState({});
       } catch (error) {
@@ -60,19 +65,24 @@ function Dashboard({ date }) {
     return `${year}-${month}-${day}`;
   };
 
-  const handleFinish = async (table_id) => {
+  const handleFinish = async (table_id, reservation_id) => {
 
     const isConfirmed = window.confirm("Is this table ready to seat new guests? This cannot be undone.")
 
     if (isConfirmed) {
       try {
         // Send DELETE request to release the table
-
         await service.finishTable(table_id);
+
+        // Update table status to 'finished'
+        await service.updateReservationStatus(reservation_id, 'finished');
+
         // Refresh the list of tables
         const updatedTables = await service.fetchTables(formatDate(displayDate));
+        const updatedReservations = await service.fetchReservations(formatDate(displayDate));
         
         setTables(updatedTables);
+        setReservations(updatedReservations);
         setErrorState({}); // Clear any previous error state
        } catch (error) {
         console.error("Error finishing table:", error);
@@ -81,26 +91,43 @@ function Dashboard({ date }) {
     }
   };
 
-  return (
-    <main>
-      <h1>Dashboard</h1>
-      {errorState.message && <ErrorAlert error={errorState}/>}
+const handleSeat = async (reservation_id) => {
+  try {
+    // Update reservation status to "seated"
+    await service.updateReservationStatus(reservation_id, 'seated');
+    
+    // Refresh the list of reservations
+    const updatedReservations = await service.fetchReservations(formatDate(displayDate));
+    setReservations(updatedReservations);
+    setErrorState({});
+  } catch (error) {
+    console.error("Error updating reservation status:", error);
+    setErrorState({ message: error.message });
+  }
+};
+  
+return (
+  <main>
+    <h1>Dashboard</h1>
+    {errorState.message && <ErrorAlert error={errorState}/>}
 
-      {/* Date Navigation Buttons */}
-      <div>
-        <button onClick={handlePreviousDay}>Previous Day</button>
-        <button onClick={handleToday}>Today</button>
-        <button onClick={handleNextDay}>Next Day</button>
-      </div>
+    {/* Date Navigation Buttons */}
+    <div>
+      <button onClick={handlePreviousDay}>Previous Day</button>
+      <button onClick={handleToday}>Today</button>
+      <button onClick={handleNextDay}>Next Day</button>
+    </div>
 
-      {/* Reservations Section */}
-      <section>
-      <h2>Reservations for {displayDate.toLocaleDateString()}</h2>
-  {reservations.length > 0 ? (
-    <ul>
-      {reservations.map((reservation) => (
-        <li key={reservation.reservation_id}>
+    {/* Reservations Section */}
+    <section>
+<h2>Reservations for {displayDate.toLocaleDateString()}</h2>
+{reservations.length > 0 ? (
+  <ul>
+    {reservations.map((reservation) => (
+      <li key={reservation.reservation_id}>
           <p>
+            Reservation ID: {reservation.reservation_id}
+            <br />
             Name: {reservation.first_name} {reservation.last_name}
             <br />
             Mobile Number: {reservation.mobile_number}
@@ -110,51 +137,54 @@ function Dashboard({ date }) {
             Time: {reservation.reservation_time}
             <br />
             People: {reservation.people}
+            <br />
+            Status: <span data-reservation-id-status={reservation.reservation_id}>{reservation.status}</span>
           </p>
-          <Link to={`/reservations/${reservation.reservation_id}/seat`}>
-            <button type="button">Seat</button>
-          </Link>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>No reservations for {displayDate.toLocaleDateString()}</p>
-  )}
+        {reservation.status === 'booked' && (
+          <button type="button" onClick={() => handleSeat(reservation.reservation_id)}>
+            Seat
+          </button>
+        )}
+      </li>
+    ))}
+  </ul>
+) : (
+  <p>No reservations for {displayDate.toLocaleDateString()}</p>
+)}
+</section>
 
-      </section>
-
-      {/* Tables Section */}
-      <section>
-      <h2>Tables for {formatDate(displayDate)}</h2>
-      <ul>
-  {tables.map((table) => (
-    <li key={table.table_id}>
-      {table.table_name} - Capacity: {table.capacity} - {" "}
-      {table.reservation_id ? (
-        <>
-          <span data-table-id-status={table.table_id}>
-            Occupied {" "}
-            <button
-              type="button"
-              data-table-id-finish={table.table_id}
-              onClick={() => handleFinish(table.table_id)}
-            >
-              Finish
-            </button>
-          </span>
-        </>
-      ) : (
+    {/* Tables Section */}
+    <section>
+    <h2>Tables for {formatDate(displayDate)}</h2>
+    <ul>
+{tables.map((table) => (
+  <li key={table.table_id}>
+    {table.table_name} - Capacity: {table.capacity} - {" "}
+    {table.reservation_id ? (
+      <>
         <span data-table-id-status={table.table_id}>
-          Open
+          Occupied {" "}
+          <button
+            type="button"
+            data-table-id-finish={table.table_id}
+            onClick={() => handleFinish(table.table_id)}
+          >
+            Finish
+          </button>
         </span>
-      )}
-    </li>
-  ))}
+      </>
+    ) : (
+      <span data-table-id-status={table.table_id}>
+        Open
+      </span>
+    )}
+  </li>
+))}
 </ul>
-      </section>
+    </section>
 
-    </main>
-  );
+  </main>
+);
 }
 
 export default Dashboard;
