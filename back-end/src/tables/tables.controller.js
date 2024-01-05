@@ -129,8 +129,18 @@ async function seatTable(req, res) {
 } 
 
 async function unseatTable (req, res) {
+
   const table_id = res.locals.table.table_id;
+  const reservation_id = res.locals.table.reservation_id;
+  const status = "finished";
+  console.log("ASDF: ", res.locals.table, reservation_id)
+
+  // remove reservation_id from table 
   await service.unseatTable(table_id);
+
+  // change status to "finished"
+  await reservations_service.updateReservationStatus(reservation_id, status);
+
   res.status(200).json({ table_id })
 }
 
