@@ -111,14 +111,19 @@ function validateReservationData(req, res, next) {
 }
 
 async function list(req, res) {
-  const { date } = req.query
-  let data;
-  if (date) {
-    data = await service.listDate(date);
-  } else {
+  const { date, mobile_number } = req.query;
+
+    let data;
+
+    if (date) {
+      data = await service.listDate(date);
+    } else if (mobile_number) {
+      data = await service.search(mobile_number);
+    } else {
     data = await service.list();
-  }
-  res.json({ data });
+    }
+
+    res.json({ data });
 }
 
 async function create(req, res) {
@@ -191,6 +196,19 @@ async function validateStatusData (req, res, next) {
   next();
 }
 
+async function search (req, res, next) {
+
+  const { mobile_number } = req.query;
+  const results = await service.search(mobile_number);
+
+  console.log("We're hitting back: ", mobile_number, results);
+
+  res.status(200).json({
+      success: true,
+      data: results,
+    });
+}
+
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
@@ -198,4 +216,5 @@ module.exports = {
   seatTable: [asyncErrorBoundary(seatTable)],
   read, 
   updateReservationStatus: [asyncErrorBoundary(reservationExists), validateStatusData, updateReservationStatus],
+  search,
 };

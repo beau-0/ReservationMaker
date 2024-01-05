@@ -10,6 +10,7 @@ const notFound = require("./errors/notFound");
 const reservationsRouter = require("./reservations/reservations.router");
 const dashboardRouter = require("./dashboard/dashboard.router")
 const tablesRouter = require("./tables/tables.router")
+const searchRouter = require("./search/search.router")
 
 const app = express();
 

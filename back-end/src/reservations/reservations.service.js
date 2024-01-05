@@ -48,11 +48,22 @@ function read (reservation_id) {
         .first()
 }
 
+function search(phoneNumber) {
+    console.log("Phone Number: ", phoneNumber)
+    return knex("reservations")
+      .whereRaw(
+        "translate(mobile_number, '() -', '') like ?",
+        `%${phoneNumber.replace(/\D/g, "")}%`
+      )
+      .orderBy("reservation_date");
+  }
+
 module.exports = {
     create,
     list, 
     listDate,
     assignTable,
     read, 
-    updateReservationStatus
+    updateReservationStatus,
+    search
   };
