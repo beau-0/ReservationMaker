@@ -209,6 +209,14 @@ async function search (req, res, next) {
     });
 }
 
+async function edit (req, res, next) {
+  const {reservation_id} = req.params;
+  const updateResData = req.body.data;
+  
+  const updatedReservation = await service.editReservation(reservation_id, updateResData);
+  res.json({ data: updatedReservation });
+}
+
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
@@ -217,4 +225,5 @@ module.exports = {
   read, 
   updateReservationStatus: [asyncErrorBoundary(reservationExists), validateStatusData, updateReservationStatus],
   search,
+  edit: [asyncErrorBoundary(reservationExists), validateReservationData, asyncErrorBoundary(edit)],
 };

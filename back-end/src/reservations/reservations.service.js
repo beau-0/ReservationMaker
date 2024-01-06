@@ -19,7 +19,7 @@ function updateReservationStatus(reservation_id, status) {
     return knex("reservations")
       .where({ reservation_id })
       .update({ status }, ["*"]);
-  }
+}
 
 function listDate (date) {
     return knex ('reservations')
@@ -33,7 +33,7 @@ function list() {
     return knex("reservations")
       .select("*")
       .orderBy("reservation_time");
-  };
+};
 
 function assignTable(table_id, reservation_id) {
     return knex("tables")
@@ -58,6 +58,17 @@ function search(phoneNumber) {
       .orderBy("reservation_date");
   }
 
+function editReservation(reservation_id, reservationData) {
+    return knex("reservations")
+    .where({ reservation_id })
+    .update(reservationData)
+    .returning("*")
+    .then(updatedReservations => {
+        // Wrap the result in an array
+        return updatedReservations[0];
+      });
+  }
+ 
 module.exports = {
     create,
     list, 
@@ -65,5 +76,6 @@ module.exports = {
     assignTable,
     read, 
     updateReservationStatus,
-    search
+    search, 
+    editReservation,
   };
