@@ -46,7 +46,7 @@ async function validateTableData(req, res, next) {
 
   if (typeof capacity === "string") {
     return res.status(400).json({ error: 'Invalid capacity. Capacity must be a positive number.' });
-  }
+  }  
 
   if (reservation_id) {
     return res.status(400).json({ error: 'Table is already occupied.' });

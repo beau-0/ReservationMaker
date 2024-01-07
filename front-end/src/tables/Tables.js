@@ -15,10 +15,13 @@ function Tables() {
     const handleSubmit = async (event) => {
             event.preventDefault();
 
+            let size = parseInt(capacity, 10);
+            console.log("SIZE: ", size);
+
         const newTableData = {
             data: {
-                table_name: tableName, 
-                capacity: capacity,
+                table_name: tableName,
+                capacity: size,
                 reservation_id: null,
             }
         };
@@ -26,6 +29,7 @@ function Tables() {
         try {
             await service.createTable(newTableData);
             setErrors({});
+            //history.goBack();
             history.push("/dashboard");
             }
         catch (error) {
@@ -62,12 +66,9 @@ function Tables() {
                     placeholder="Table Capacity"
                     required
                 />
-                <label htmlFor="mobile_number"> Contact Number </label>
                 {/* Display ErrorAlert if there's a submission error */}
                 {errors.submit && <ErrorAlert error={{ message: errors.submit }} />}
-                <Link to="/dashboard">
-                    <button type="button"> Cancel </button>
-                </Link>
+                <button type="button" onClick={() => history.goBack()}> Cancel </button>
                 <button type="submit"> Submit </button>
             </form>
         </div>

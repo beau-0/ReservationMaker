@@ -22,6 +22,7 @@ function Routes() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const dateParam = queryParams.get("date");
+  //console.log("ROUTE DATE: ", dateParam);
 
   return (
     <Switch>

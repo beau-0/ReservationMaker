@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 //import { listTables } from "../utils/api";
 import { useHistory, useParams, useQuery } from "react-router-dom";
-import { assignTable, listTables }  from "./reservations.service";
+import { assignTable, listTables, updateReservationStatus }  from "./reservations.service";
 
 function SeatReservationPage() {
   const history = useHistory();
@@ -30,8 +30,15 @@ function SeatReservationPage() {
   };
 
   const handleSeatReservation = async () => {
+    
     try {
+    // add reservation_id to table
     await assignTable(selectedTable, reservation_id);
+
+    // Update reservation status to "seated"
+    await updateReservationStatus(reservation_id, 'seated');
+    
+    // return user to dashboard
     history.push("/dashboard");
     } catch (error) {
         console.error("Error assigning table:", error);

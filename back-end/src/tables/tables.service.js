@@ -3,7 +3,7 @@ const knex = require("../db/connection");
 function assignTable(table_id, reservation_id) {
     return knex("tables")
         .where({ table_id }, )
-        .update({ reservation_id }, ["*"])
+        .update({ reservation_id, occupied: true }, ["*"])
 }
 
 function getTableByName(tableName) {
@@ -48,7 +48,7 @@ async function listTables() {
 async function unseatTable(table_id) {
     return knex('tables')
         .where({ table_id: table_id })
-        .update({ reservation_id: null });
+        .update({ reservation_id: null, occupied: null  });
 }
 
 module.exports = {

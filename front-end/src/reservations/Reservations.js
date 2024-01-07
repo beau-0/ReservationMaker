@@ -15,13 +15,6 @@ function Reservations () {
     const history = useHistory();
     const [errors, setErrors] = useState({});
 
-    const formatDate = (date) => {
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const day = date.getDate().toString().padStart(2, "0");
-        return `${year}-${month}-${day}`;
-      };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         
@@ -40,9 +33,10 @@ function Reservations () {
 
             const createdReservation = await service.createReservation(newReservation);
             const newReservationDate = createdReservation.reservation_date;
+            console.log("In Reservations: ", newReservationDate);
             
             setErrors({});
-            history.push(`/dashboard?date=${formatDate(new Date(newReservationDate))}`);
+            history.push(`/dashboard?date=${newReservationDate}`);
             }
         catch (error) {
             console.log("error.message:", error.message);
