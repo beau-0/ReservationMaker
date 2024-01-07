@@ -19,6 +19,8 @@ function Dashboard({ date }) {
   const [errorState, setErrorState] = useState({message: null});
 
   useEffect(() => {
+    console.log("Dashboard date: ", date);
+
     const loadDashboard = async () => {
       try {
         const formattedDate = formatDate(displayDate);

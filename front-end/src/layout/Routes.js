@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import NotFound from "./NotFound";
 import { today } from "../utils/date-time";
@@ -18,6 +18,11 @@ import Search from "../search/Search";
  */
 
 function Routes() {
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const dateParam = queryParams.get("date");
+
   return (
     <Switch>
       <Route exact={true} path="/search">
@@ -38,8 +43,8 @@ function Routes() {
       <Route exact={true} path="/tables">
         <Redirect to={"/tables/new"} />
       </Route>
-      <Route path="/dashboard">
-        <Dashboard date={today()} />
+      <Route path="/dashboard/:date?">
+        <Dashboard date={dateParam || today()} />
       </Route>
       <Route exact={true} path="/">
         <Redirect to={"/dashboard"} />

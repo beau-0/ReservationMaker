@@ -19,6 +19,7 @@ async function createReservation(reservationData) {
     }
   
     const responseData = await response.json();
+    console.log("XXX: ", responseData)
     return responseData.data;
   }
 
@@ -63,7 +64,30 @@ async function listTables() {
   }
 }
 
+async function editReservation(reservation_id, reservationData) {
+
+  const response = await fetch(`${API_BASE_URL}/reservations/${reservation_id}`,
+  {
+    method: 'PUT',
+    body: JSON.stringify(reservationData),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if(!response.ok){
+    const errorData = await response.json();
+    console.log(errorData);
+    const errorMessage = errorData.error;
+    throw new Error(errorMessage || 'Failed to create reservation');
+  }
+
+  const responseData = await response.json();
+  return responseData.data;
+}
+
 
 export { createReservation };
 export { assignTable };
 export { listTables };
+export { editReservation };

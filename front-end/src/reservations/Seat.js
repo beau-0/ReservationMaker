@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 //import { listTables } from "../utils/api";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useQuery } from "react-router-dom";
 import { assignTable, listTables }  from "./reservations.service";
 
 function SeatReservationPage() {

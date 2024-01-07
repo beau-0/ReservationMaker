@@ -15,6 +15,13 @@ function Reservations () {
     const history = useHistory();
     const [errors, setErrors] = useState({});
 
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const day = date.getDate().toString().padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         
@@ -30,9 +37,12 @@ function Reservations () {
         };
 
         try {
-            await service.createReservation(newReservation);
+
+            const createdReservation = await service.createReservation(newReservation);
+            const newReservationDate = createdReservation.reservation_date;
+            
             setErrors({});
-            history.push("/dashboard");
+            history.push(`/dashboard?date=${formatDate(new Date(newReservationDate))}`);
             }
         catch (error) {
             console.log("error.message:", error.message);
@@ -41,7 +51,7 @@ function Reservations () {
             } else {
                 setErrors({submit: "Failed to submit reservation. Please try again." });
             }
-        }
+        } 
     } 
           
     return (
@@ -51,7 +61,8 @@ function Reservations () {
                 <label htmlFor="first_name">Name</label>
                 <input 
                     type="text" 
-                    id="firstName" 
+                    id="first_name" 
+                    name="first_name"
                     value={firstName} 
                     onChange={(e) => {setFirstName(e.target.value)}} 
                     placeholder="First Name"
@@ -60,6 +71,7 @@ function Reservations () {
                 <input 
                     type="text" 
                     id="last_name" 
+                    name="last_name"
                     value={lastName} 
                     onChange={(e) => {setLastName(e.target.value)}} 
                     placeholder="Last Name"
@@ -68,7 +80,8 @@ function Reservations () {
                 <label htmlFor="mobile_number">Contact Number</label>
                 <input 
                     type="tel" 
-                    id="mobileNumber" 
+                    id="mobile_number" 
+                    name="mobile_number"
                     value={mobileNumber} 
                     onChange={(e) => {setMobileNumber(e.target.value)}} 
                     placeholder="Enter your phone number"
@@ -77,7 +90,8 @@ function Reservations () {
                 <label htmlFor="reservation_date">Date of Reservation</label>
                 <input 
                     type="date" 
-                    id="reservationDate" 
+                    id="reservation_date" 
+                    name="reservation_date"
                     value={reservationDate} 
                     onChange={(e) => {setReservationDate(e.target.value)}} 
                     required
@@ -85,7 +99,8 @@ function Reservations () {
                 <label htmlFor="reservation_time">Time of Reservation</label>
                 <input 
                     type="time" 
-                    id="reservationTime" 
+                    id="reservation_time" 
+                    name="reservation_time"
                     value={reservationTime} 
                     onChange={(e) => {setReservationTime(e.target.value)}} 
                     required
@@ -94,6 +109,7 @@ function Reservations () {
                 <input 
                     type="number" 
                     id="people" 
+                    name="people"
                     value={people}
                     onChange={(e) => {setPeople(e.target.value)}} 
                     placeholder="Number of people"
@@ -106,7 +122,7 @@ function Reservations () {
                     <button type="button">Cancel</button>
                 </Link>
                 <button type="submit">Submit</button>
-            </form>
+            </form> 
         </div>
     )
 }
