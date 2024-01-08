@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 //import { listTables } from "../utils/api";
-import { useHistory, useParams, useQuery } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { assignTable, listTables, updateReservationStatus }  from "./reservations.service";
 
 function SeatReservationPage() {
@@ -32,6 +32,7 @@ function SeatReservationPage() {
   const handleSeatReservation = async () => {
     
     try {
+
     // add reservation_id to table
     await assignTable(selectedTable, reservation_id);
 
@@ -42,7 +43,7 @@ function SeatReservationPage() {
     history.push("/dashboard");
     } catch (error) {
         console.error("Error assigning table:", error);
-        setErrors("Failed to assign table. Please try again.");
+        setErrors(error.message || "Failed to assign table. Please try again.");
     }
   };
 
@@ -54,6 +55,7 @@ function SeatReservationPage() {
   return (
     <div>
       <h1>Seat Reservation</h1>
+      {errors && <div style={{ color: 'red' }}>{errors}</div>}
       <label htmlFor="tableSelect">Select a Table:</label>
       <select id="tableSelect" onChange={handleTableSelect} value={selectedTable || ""}>
         <option value="" disabled>Select a table</option>

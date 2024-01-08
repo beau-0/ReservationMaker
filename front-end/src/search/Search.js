@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
-import ErrorAlert from "../layout/ErrorAlert";
+import { useHistory } from "react-router-dom";
+//import ErrorAlert from "../layout/ErrorAlert";
 
 const service = require("./search.service");
 
 function Search() {
     const [mobileNumber, setMobileNumber] = useState("");
     const [error, setError] = useState(null);
-    const history = useHistory();
+    //const history = useHistory();
     const [searchResults, setSearchResults] = useState([]);
     const [searchPerformed, setSearchPerformed] = useState(false);
   

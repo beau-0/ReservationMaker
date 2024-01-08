@@ -17,32 +17,33 @@ function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
   const [tables, setTables] = useState([]);
   const [errorState, setErrorState] = useState({message: null});
+  const [errors, setErrors] = useState({});
 
 
   useEffect(() => {
     console.log("Dashboard date: ", date);
 
-    const loadDashboard = async () => {
-      try {
-        //const formattedDate = formatDate(displayDate);
-        const reservationsData = await service.fetchReservations(displayDate);
+  const loadDashboard = async () => {
+    try {
+      //const formattedDate = formatDate(displayDate);
+      const reservationsData = await service.fetchReservations(displayDate);
 
-        // Filter out finished reservations 
-        const activeReservations = reservationsData.filter(reservation => reservation.status !== 'finished');
+      // Filter out finished reservations 
+      const activeReservations = reservationsData.filter(reservation => reservation.status !== 'finished');
 
-        // Fetch all tables
-        const tablesData = await service.fetchTables(displayDate);
+      // Fetch all tables
+      const tablesData = await service.fetchTables(displayDate);
 
-        setReservations(activeReservations);
-        setTables(tablesData);
-        setErrorState({});
-      } catch (error) {
-        console.error("Error loading dashboard data:", error);
-        setErrorState(error.message);
-      }
-    };
+      setReservations(activeReservations);
+      setTables(tablesData);
+      setErrorState({});
+    } catch (error) {
+      console.error("Error loading dashboard data:", error);
+      setErrorState(error.message);
+    }
+  };
 
-    loadDashboard();
+  loadDashboard();
   }, [displayDate]);
 
   function formatDate(date) {
@@ -74,6 +75,31 @@ function Dashboard({ date }) {
     setDisplayDate(formattedDate);
   };
 
+  const handleCancelReservation = async (reservation_id) => {
+    const reservationId = reservation_id; 
+    const confirmation = window.confirm("Do you want to cancel this reservation? This cannot be undone.");
+
+    if (confirmation) {
+        try {
+            // Make a PUT request to update reservation status to "cancelled"
+            await service.updateReservationStatus(reservationId, { data: { status: "cancelled" } });
+
+            // Refresh the list of tables
+            const updatedTables = await service.fetchTables(displayDate);
+          
+            // refresh reservations and filter out "finished" reservations
+            const updatedReservations = await service.fetchReservations(displayDate);
+            const activeReservations = updatedReservations.filter(reservation => reservation.status !== 'finished');
+
+
+        } catch (error) {
+            console.error("Error cancelling reservation:", error);
+            setErrors({ cancel: "Failed to cancel reservation. Please try again." });
+        }
+    }
+  };
+
+
   const handleFinish = async (table_id, reservation_id) => {
 
     const isConfirmed = window.confirm("Is this table ready to seat new guests? This cannot be undone.")
@@ -83,15 +109,15 @@ function Dashboard({ date }) {
         // Send DELETE request to release the table
         await service.finishTable(table_id);
 
-        // Update table status to 'finished'
-        await service.updateReservationStatus(reservation_id, 'finished');
-
         // Refresh the list of tables
         const updatedTables = await service.fetchTables(displayDate);
+          
+        // refresh reservations and filter out "finished" reservations
         const updatedReservations = await service.fetchReservations(displayDate);
+        const activeReservations = updatedReservations.filter(reservation => reservation.status !== 'finished');
         
         setTables(updatedTables);
-        setReservations(updatedReservations);
+        setReservations(activeReservations);
         setErrorState({}); // Clear any previous error state
        } catch (error) {
         console.error("Error finishing table:", error);
@@ -119,29 +145,31 @@ return (
   <ul>
     {reservations.map((reservation) => (
       <li key={reservation.reservation_id}>
-          <p>
-            Reservation ID: {reservation.reservation_id}
-            <br />
-            Name: {reservation.first_name} {reservation.last_name}
-            <br />
-            Mobile Number: {reservation.mobile_number}
-            <br />
-            Date: {reservation.reservation_date}
-            <br />
-            Time: {reservation.reservation_time}
-            <br />
-            People: {reservation.people}
-            <br />
-            Status: <span data-reservation-id-status={reservation.reservation_id}>{reservation.status}</span>
-          </p>
+        <p>
+          Reservation ID: {reservation.reservation_id}
+          {/* other reservation details */}
+          <br />
+          Status: <span data-reservation-id-status={reservation.reservation_id}>{reservation.status}</span>
+        </p>
         {reservation.status === 'booked' && (
-          <Link to={`/reservations/${reservation.reservation_id}/seat`}>
-            <button type="button">
-              Seat
+          <div>
+            <Link to={`/reservations/${reservation.reservation_id}/seat`}>
+              <button type="button">Seat</button>
+            </Link>
+            {' '}
+            <Link to={`/reservations/${reservation.reservation_id}/edit`}>
+              <button type="button">Edit</button>
+            </Link>
+            {' '}
+            <button
+              type="button"
+              data-reservation-id-cancel={reservation.reservation_id}
+              onClick={() => handleCancelReservation(reservation.reservation_id)}
+            >
+              Cancel
             </button>
-          </Link>
-)}
-        
+          </div>
+        )}
       </li>
     ))}
   </ul>
@@ -164,7 +192,7 @@ return (
           <button
             type="button"
             data-table-id-finish={table.table_id}
-            onClick={() => handleFinish(table.table_id)}
+            onClick={() => handleFinish(table.table_id, table.reservation_id)}
           >
             Finish
           </button>

@@ -6,7 +6,7 @@ const API_BASE_URL =
 
     try {
         const response = await fetch(`${API_BASE_URL}/search?mobile_number=${phoneNumber}`);
-
+        console.log("hitting mobile phone search", response)
         if (!response.ok) {
             throw new Error(`Error fetching reservations: ${response.status} - ${response.statusText}`);
           }

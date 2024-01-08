@@ -1,7 +1,7 @@
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
 
-  export async function fetchTables(date) {
+export async function fetchTables(date) {
     try {
         const response = await fetch(`${API_BASE_URL}/dashboard?date=${date}`);
 
@@ -32,7 +32,7 @@ export async function fetchReservations(date) {
 }
 
 export const finishTable = async (tableId) => {
-  console.log("asdf", tableId)
+  console.log("Finish?", tableId)
   try {
     const response = await fetch(`${API_BASE_URL}/tables/${tableId}/seat`, {
       method: 'DELETE',
@@ -48,6 +48,7 @@ export const finishTable = async (tableId) => {
 }
 
 export const updateReservationStatus = async (reservationId, status) => {
+  console.log("JKL: ", `${API_BASE_URL}/reservations/${reservationId}/status`);
   try {
     const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}/status`, {
       method: 'PUT',
