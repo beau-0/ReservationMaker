@@ -21,7 +21,6 @@ function Dashboard({ date }) {
 
 
   useEffect(() => {
-    console.log("Dashboard date: ", date);
 
   const loadDashboard = async () => {
     try {
@@ -99,7 +98,6 @@ function Dashboard({ date }) {
     }
   };
 
-
   const handleFinish = async (table_id, reservation_id) => {
 
     const isConfirmed = window.confirm("Is this table ready to seat new guests? This cannot be undone.")
@@ -147,14 +145,23 @@ return (
       <li key={reservation.reservation_id}>
         <p>
           Reservation ID: {reservation.reservation_id}
-          {/* other reservation details */}
+          <br />
+          Name: {reservation.first_name} {reservation.last_name}
+          <br />
+          Mobile Number: {reservation.mobile_number}
+          <br />
+          Date: {displayDate}
+          <br />
+          Time: {reservation.reservation_time}
+          <br />
+          People: {reservation.people}
           <br />
           Status: <span data-reservation-id-status={reservation.reservation_id}>{reservation.status}</span>
         </p>
         {reservation.status === 'booked' && (
           <div>
             <Link to={`/reservations/${reservation.reservation_id}/seat`}>
-              <button type="button">Seat</button>
+            <button type="button">Seat</button>
             </Link>
             {' '}
             <Link to={`/reservations/${reservation.reservation_id}/edit`}>
