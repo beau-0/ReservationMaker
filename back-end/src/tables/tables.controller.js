@@ -14,7 +14,7 @@ async function tableExists (req, res, next) {
       message: `Table ${table_id} cannot be found.` });
 }
 
-function tableOccupied (req, res, next) {
+/* function tableOccupied (req, res, next) {
   const { table_id } = res.locals.table.table_id;
 
   if (!res.locals.table.reservation_id) {
@@ -23,6 +23,19 @@ function tableOccupied (req, res, next) {
       message: `Table ${table_id} is not occupied`,});
   }
   next();
+} */
+
+function tableOccupied (req, res, next) {  
+const table = res.locals.table;
+
+if (!table.reservation_id){
+  next({
+      status: 400,
+      message: "Table is not occupied"
+  })
+}
+res.locals.table = table;
+next();
 }
 
 async function validateTableData(req, res, next) {

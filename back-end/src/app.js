@@ -20,6 +20,7 @@ app.use(express.json());
 app.use("/reservations", reservationsRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/tables", tablesRouter);
+app.use("/search", searchRouter);
 
 app.use(notFound);
 app.use(errorHandler);

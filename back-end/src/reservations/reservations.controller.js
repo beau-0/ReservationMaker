@@ -20,6 +20,8 @@ async function reservationExists (req, res, next) {
 
 function validateReservationData(req, res, next) {
 
+  console.log("We're hitting validate Res Data")
+
   const reservationData = req.body.data;
   // Extracting data from the request
   let reservationTime = req.body.data.reservation_time;
@@ -158,6 +160,9 @@ async function read(req, res) {
 }
 
 async function updateReservationStatus(req, res, next) {
+
+  console.log("We're hitting the update function")
+
   const { reservation_id } = req.params;
   const { status } = req.body.data;
 
@@ -178,6 +183,8 @@ async function validateStatusData (req, res, next) {
   const { status } = req.body.data;
   const reservation = res.locals.reservation;
 
+  console.log("We're hitting valiate 1: ", reservation)
+
   if (status === 'unknown') {
     return next({
       status: 400,
@@ -186,10 +193,12 @@ async function validateStatusData (req, res, next) {
   }
 
   if (reservation.status !== "finished" && reservation.status !== "seated" && reservation.status !== "booked") {
+    console.log("We're hitting valiate 2: ", reservation)
     return res.status(400).json({ error: `Reservation ${reservation_id} status is ${reservation.status}.` });
   }
 
   if (reservation.status === 'finished') {
+    console.log("We're hitting valiate 3: ", reservation)
     return res.status(400).json({ error: `Reservation ${reservation_id} is in a finished status.` });
   }
 

@@ -10,21 +10,21 @@ const cors = require("cors");
 
 router.use(cors());
 
-router.route("/")
-    .get(controller.list)
-    .post(controller.create)
-    .all(methodNotAllowed)
-
-router.route("/new")
-    .post(controller.create)
-    .all(methodNotAllowed)
+router.route("/:reservation_id/status")
+    .put(controller.updateReservationStatus);
 
 router.route("/:reservation_id")       
     .get(controller.read)
     .put(controller.edit)
     .all(methodNotAllowed)
+    
+router.route("/new")
+    .post(controller.create)
+    .all(methodNotAllowed)
 
-router.route("/:reservation_id/status")
-    .put(controller.updateReservationStatus);
+router.route("/")
+    .get(controller.list)
+    .post(controller.create)
+    .all(methodNotAllowed)
 
 module.exports = router;
