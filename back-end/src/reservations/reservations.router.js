@@ -13,13 +13,13 @@ router.use(cors());
 router.route("/:reservation_id/status")
     .put(controller.updateReservationStatus);
 
+router.route("/new")
+    .post(controller.create)
+    .all(methodNotAllowed)
+
 router.route("/:reservation_id")       
     .get(controller.read)
     .put(controller.edit)
-    .all(methodNotAllowed)
-    
-router.route("/new")
-    .post(controller.create)
     .all(methodNotAllowed)
 
 router.route("/")
