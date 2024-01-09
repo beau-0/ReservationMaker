@@ -71,6 +71,7 @@ export async function listReservations(params, signal) {
 }
 
 // TABLES SERVICE FILES
+/*
 async function fetchTables(date) {
   try {
       const response = await fetch(`${API_BASE_URL}/dashboard?date=${date}`);
@@ -86,7 +87,7 @@ async function fetchTables(date) {
   }
 }
 export async function fetchTables(params, signal) {   
-}
+} 
 
 async function fetchReservations(date) {
   try {
@@ -298,3 +299,36 @@ try {
 };
 export async function updateReservationStatus(params, signal) {   
 }
+
+async function getReservation (reservation_id) {
+  console.timeStamp("test");
+}
+export async function getReservation(reservation_id) {   
+}
+
+
+//EDIT
+export async function getReservation(reservationId) {
+  const response = await fetch(`/api/reservations/${reservationId}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to fetch reservation.');
+  }
+  return response.json();
+}
+
+// Function to update a reservation
+export async function updateReservation(reservationId, updatedReservation) {
+  const response = await fetch(`/api/reservations/${reservationId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updatedReservation),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to update reservation.');
+  }
+} */

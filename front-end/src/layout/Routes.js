@@ -8,6 +8,7 @@ import Reservations from "../reservations/Reservations";
 import Tables from "../tables/Tables";
 import Seat from "../reservations/Seat";
 import Search from "../search/Search";
+import Edit from "../reservations/Edit";
 
 /**
  * Defines all the routes for the application.
@@ -35,6 +36,9 @@ function Routes() {
       <Route exact={true} path="/reservations/:reservation_id/seat">
         <Seat  />
       </Route>
+      {/*<Route exact={true} path="/reservations/:reservation_id/edit">
+        <Edit  />
+      </Route>*/}
       <Route exact={true} path="/reservations">
         <Redirect to={"/dashboard"} />
       </Route>

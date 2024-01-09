@@ -125,98 +125,150 @@ function Dashboard({ date }) {
   };
   
 return (
-  <main>
-    <h1>Dashboard</h1>
+  <div className="dashboard-container custom-background">
+
+<div className="main-content">
+  {/* Jumbotron with an image */}
+  <div className="jumbotron position-relative overflow-hidden">
+    <img
+      src="https://i.ibb.co/dGCBBYN/yyyyyx219199018-fb-cover-1-2222222.jpg"
+      alt="Reservista Banner"
+      className="img-fluid w-100 h-100 object-cover"
+    />
+    <div className="overlay"></div>
+    <div className="jumbotron-content text-center text-white position-absolute w-100">
+      <h1 className="display-4 font-lucida" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
+        Reservista .. Your Table Awaits
+      </h1>
+    </div>
+  </div>
+</div>
+
+
     {errorState.message && <ErrorAlert error={errorState}/>}
 
     {/* Date Navigation Buttons */}
-    <div>
-      <button onClick={handlePreviousDay}>Previous Day</button>
-      <button onClick={handleToday}>Today</button>
-      <button onClick={handleNextDay}>Next Day</button>
+    <div className="nav-section">
+      <button onClick={handlePreviousDay} className="btn btn-warning nav-buttons btn-lg mr-2">Previous Day</button>
+      <button onClick={handleToday} className="btn btn-warning nav-buttons btn-lg mr-2">Today</button>
+      <button onClick={handleNextDay} className="btn btn-warning nav-buttons btn-lg mr-2">Next Day</button>
     </div>
 
-    {/* Reservations Section */}
-    <section>
-<h2>Reservations for {displayDate}</h2>
-{reservations.length > 0 ? (
-  <ul>
-    {reservations.map((reservation) => (
-      <li key={reservation.reservation_id}>
-        <p>
-          Reservation ID: {reservation.reservation_id}
-          <br />
-          Name: {reservation.first_name} {reservation.last_name}
-          <br />
-          Mobile Number: {reservation.mobile_number}
-          <br />
-          Date: {displayDate}
-          <br />
-          Time: {reservation.reservation_time}
-          <br />
-          People: {reservation.people}
-          <br />
-          Status: <span data-reservation-id-status={reservation.reservation_id}>{reservation.status}</span>
-        </p>
-        {reservation.status === 'booked' && (
-          <div>
-            <Link to={`/reservations/${reservation.reservation_id}/seat`}>
-            <button type="button">Seat</button>
-            </Link>
-            {' '}
-            <Link to={`/reservations/${reservation.reservation_id}/edit`}>
-              <button type="button">Edit</button>
-            </Link>
-            {' '}
-            <button
-              type="button"
-              data-reservation-id-cancel={reservation.reservation_id}
-              onClick={() => handleCancelReservation(reservation.reservation_id)}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
-      </li>
-    ))}
-  </ul>
-) : (
-  <p>No reservations for {displayDate}</p>
+    <div className="row">
+    {/* Reservations Section - 2/3 width*/}
+    <section className="reservations-section">
+          <h4>Reservations for {displayDate}</h4>
+          {reservations.length > 0 ? (
+            <table className="table table-bordered shadow">
+              <thead>
+                <tr>
+                  <th style={{ height: '40px' }}>ID</th>
+                  <th style={{ height: '40px' }}>Name & Phone</th> {/* Combine Name and Phone into one column */}
+                  <th style={{ height: '40px' }}>Date</th>
+                  <th style={{ height: '40px' }}>Time</th>
+                  <th style={{ height: '40px' }}>People</th>
+                  <th style={{ height: '40px' }}>Status</th>
+                  <th style={{ height: '40px' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reservations.map((reservation) => (
+                  <tr key={reservation.reservation_id}>
+                    <td>{reservation.reservation_id}</td>
+                    <td>
+                      {`${reservation.first_name} ${reservation.last_name}`} <br />
+                      {reservation.mobile_number}
+                    </td>
+                    <td>{displayDate}</td>
+                    <td>{reservation.reservation_time}</td>
+                    <td>{reservation.people}</td>
+                    <td>{reservation.status}</td>
+                    <td>
+                    {reservation.status === 'booked' && (
+  <div className="d-flex flex-column">
+    <Link to={`/reservations/${reservation.reservation_id}/seat`}>
+      <button type="button" className="btn btn-outline-info btn-sm mb-2 btn-block">
+        Seat
+      </button>
+    </Link>
+    <Link to={`/reservations/${reservation.reservation_id}/edit`}>
+    <button type="button" className="btn btn-outline-warning btn-sm mb-2 btn-block">
+        Edit
+      </button>
+    </Link>
+    <button
+      type="button"
+      data-reservation-id-cancel={reservation.reservation_id}
+      onClick={() => handleCancelReservation(reservation.reservation_id)}
+      className="btn btn-outline-danger btn-sm mb-2 btn-block"
+    >
+      Cancel
+    </button>
+  </div>
 )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No reservations for {displayDate}</p>
+          )}
+        </section>
+
+
+
+
+        {/* Tables Section - 1/3 width*/}
+        <section className="tables-section">
+  <h4>   Tables</h4>
+  {tables.length > 0 ? (
+    <table className="table table-bordered shadow">
+      <thead>
+        <tr>
+          <th style={{ height: '49px', verticalAlign: 'middle' }}>ID</th>
+          <th style={{ height: '49px', verticalAlign: 'middle' }}>Table No</th>
+          <th style={{ height: '49px', verticalAlign: 'middle' }}>Size</th>
+          <th style={{ height: '49px', verticalAlign: 'middle' }}>Status</th>
+          <th style={{ height: '49px', verticalAlign: 'middle' }}>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tables.map((table) => (
+          <tr key={table.table_id}>
+            <td>{table.table_id}</td>
+            <td>{table.table_name}</td>
+            <td>{table.capacity}</td>
+            <td>
+              {table.reservation_id ? (
+                <>Occupied </>
+              ) : (
+                'Open'
+              )}
+            </td>
+            <td>
+              {table.reservation_id && (
+                <button
+                  type="button"
+                  data-table-id-finish={table.table_id}
+                  onClick={() => handleFinish(table.table_id, table.reservation_id)}
+                  className="btn btn-outline-success btn-sm"
+                >
+                  Finish
+                </button>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <p>No tables available</p>
+  )}
 </section>
-
-    {/* Tables Section */}
-    <section>
-    <h2>Tables </h2>
-    <ul>
-{tables.map((table) => (
-  <li key={table.table_id}>
-    {table.table_name} - Capacity: {table.capacity} - {" "}
-    {table.reservation_id ? (
-      <>
-        <span data-table-id-status={table.table_id}>
-          Occupied {" "}
-          <button
-            type="button"
-            data-table-id-finish={table.table_id}
-            onClick={() => handleFinish(table.table_id, table.reservation_id)}
-          >
-            Finish
-          </button>
-        </span>
-      </>
-    ) : (
-      <span data-table-id-status={table.table_id}>
-        Open
-      </span>
-    )}
-  </li>
-))}
-</ul>
-    </section>
-
-  </main>
-);
+    </div>
+  </div>
+  );
 }
 
 export default Dashboard;

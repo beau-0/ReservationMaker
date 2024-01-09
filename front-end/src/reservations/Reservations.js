@@ -49,75 +49,94 @@ function Reservations () {
     } 
           
     return (
-        <div>
-            <h4>New Reservation</h4>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="first_name">Name</label>
-                <input 
-                    type="text" 
-                    id="first_name" 
-                    name="first_name"
-                    value={firstName} 
-                    onChange={(e) => {setFirstName(e.target.value)}} 
-                    placeholder="First Name"
-                    required
-                />
-                <input 
-                    type="text" 
-                    id="last_name" 
-                    name="last_name"
-                    value={lastName} 
-                    onChange={(e) => {setLastName(e.target.value)}} 
-                    placeholder="Last Name"
-                    required
-                />
-                <label htmlFor="mobile_number">Contact Number</label>
-                <input 
-                    type="tel" 
-                    id="mobile_number" 
-                    name="mobile_number"
-                    value={mobileNumber} 
-                    onChange={(e) => {setMobileNumber(e.target.value)}} 
-                    placeholder="Enter your phone number"
-                    required
-                />
-                <label htmlFor="reservation_date">Date of Reservation</label>
-                <input 
-                    type="date" 
-                    id="reservation_date" 
-                    name="reservation_date"
-                    value={reservationDate} 
-                    onChange={(e) => {setReservationDate(e.target.value)}} 
-                    required
-                />
-                <label htmlFor="reservation_time">Time of Reservation</label>
-                <input 
-                    type="time" 
-                    id="reservation_time" 
-                    name="reservation_time"
-                    value={reservationTime} 
-                    onChange={(e) => {setReservationTime(e.target.value)}} 
-                    required
-                />
-                <label htmlFor="people">Number of People</label>
-                <input 
-                    type="number" 
-                    id="people" 
-                    name="people"
-                    value={people}
-                    onChange={(e) => {setPeople(e.target.value)}} 
-                    placeholder="Number of people"
-                    required
-                />
+<div class="new-reservation">
+  <h4>New Reservation</h4>
+  <form onSubmit={handleSubmit} className="reservation-form">
+    <div className="form-group">
+      <label htmlFor="first_name"></label>
+      <div className="name-inputs">
+        <input
+          type="text"
+          id="first_name"
+          name="first_name"
+          value={firstName}
+          onChange={(e) => {setFirstName(e.target.value)}}
+          placeholder="First Name"
+          required
+        />
+        <input
+          type="text"
+          id="last_name"
+          name="last_name"
+          value={lastName}
+          onChange={(e) => {setLastName(e.target.value)}}
+          placeholder="Last Name"
+          required
+        />
+      </div>
+    </div>
 
-                {/* Display ErrorAlert if there's a submission error */}
-                {errors.submit && <ErrorAlert error={{ message: errors.submit }} />}
-                <Link to="/dashboard">
-                    <button type="button">Cancel</button>
-                </Link>
-                <button type="submit">Submit</button>
-            </form> 
-        </div>
+    <div className="form-group">
+      <label htmlFor="mobile_number"></label>
+      <input
+        type="tel"
+        id="mobile_number"
+        name="mobile_number"
+        value={mobileNumber}
+        onChange={(e) => {setMobileNumber(e.target.value)}}
+        placeholder="Enter your phone number"
+        required
+      />
+    </div>
+
+    <div className="form-group">
+      <label htmlFor="reservation_date"></label>
+      <input
+        type="date"
+        id="reservation_date"
+        name="reservation_date"
+        value={reservationDate}
+        onChange={(e) => {setReservationDate(e.target.value)}}
+        required
+      />
+    </div>
+
+    <div className="form-group">
+      <label htmlFor="reservation_time"></label>
+      <input
+        type="time"
+        id="reservation_time"
+        name="reservation_time"
+        value={reservationTime}
+        onChange={(e) => {setReservationTime(e.target.value)}}
+        required
+      />
+    </div>
+
+    <div className="form-group">
+      <label htmlFor="people"></label>
+      <input
+        type="number"
+        id="people"
+        name="people"
+        value={people}
+        onChange={(e) => {setPeople(e.target.value)}}
+        placeholder="Number of people"
+        required
+      />
+    </div>
+
+    {/* Display ErrorAlert if there's a submission error */}
+    {errors.submit && <ErrorAlert error={{ message: errors.submit }} />}
+
+    <div className="form-buttons">
+      <Link to="/dashboard">
+        <button type="button" className="btn btn-secondary">Cancel</button>
+      </Link>
+      <button type="submit" className="btn btn-primary">Submit</button>
+    </div>
+  </form>
+</div>
     )
 }
 

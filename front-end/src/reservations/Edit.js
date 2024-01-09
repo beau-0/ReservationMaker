@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+/*import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { getReservation, updateReservation } from '../utils/api';
+import { editReservation }  from "./reservations.service";
+import { getReservation } from '../utils/api';
 
 function Edit() {
     const history = useHistory();
@@ -74,7 +76,7 @@ function Edit() {
               value={reservation.first_name}
               onChange={handleChange}
             />
-            {/* Add other form fields here... */}
+            {/* Add other form fields here... }
             <button type="submit">Submit</button>
             <button type="button" onClick={handleCancel}>
               Cancel
@@ -85,3 +87,4 @@ function Edit() {
 }
 
 export default Edit;
+*/

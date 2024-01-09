@@ -40,12 +40,12 @@ function Search() {
         <h2>Search Reservations</h2>
         <form onSubmit={handleSearch}>
           <div>
-            <label htmlFor="mobileNumber">Enter a customer's phone number:</label>
+            <label htmlFor="mobileNumber">Enter a customer's phone number:  </label>
             <input
               type="text"
               id="mobileNumber"
               name="mobileNumber"
-              placeholder="Enter a customer's phone number"
+              placeholder="Customer Phone"
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               required
